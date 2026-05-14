@@ -73,7 +73,10 @@ function TeamCard({ team, color, isDragOver, selected, onDragOver, onDragLeave, 
           })}
       </ul>
       {selected && selected.fromTeamId !== team.id && (
-        <div className="drop-hint">Drop here</div>
+        <div className="drop-zone">
+          <span className="drop-zone-icon">↓</span>
+          Move player here
+        </div>
       )}
     </div>
   );

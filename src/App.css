@@ -301,10 +301,22 @@ body {
   background: color-mix(in srgb, var(--team-color, var(--green)) 6%, white);
   cursor: pointer;
 }
-.drop-hint {
-  text-align: center; font-size: .8rem; font-weight: 600;
+.drop-zone {
+  margin: .5rem .75rem .75rem;
+  border: 2px dashed var(--team-color, var(--green));
+  border-radius: 8px;
+  padding: .65rem;
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
   color: var(--team-color, var(--green));
-  padding: .4rem; opacity: .8;
+  font-size: .82rem; font-weight: 600;
+  background: color-mix(in srgb, var(--team-color, var(--green)) 8%, white);
+  animation: pulse-border 1.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.drop-zone-icon { font-size: 1rem; }
+@keyframes pulse-border {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .5; }
 }
 
 /* ── Responsive ── */
