@@ -276,11 +276,23 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .team-player:last-child { border-bottom: none; }
-.tp-name { font-size: .9rem; font-weight: 500; }
+.tp-name { font-size: .9rem; font-weight: 500; flex: 1; }
 .tp-score {
   font-size: .8rem; font-weight: 700;
   background: var(--green-bg); color: var(--green);
   padding: .1rem .45rem; border-radius: 6px;
+}
+
+/* ── Drag & Drop ── */
+.drag-hint { font-size: .8rem; color: var(--text-muted); margin: -.25rem 0 .25rem; }
+.team-player.draggable { cursor: grab; transition: background .1s, opacity .15s; }
+.team-player.draggable:active { cursor: grabbing; }
+.team-player.is-dragging { opacity: .35; }
+.drag-handle { color: var(--text-muted); font-size: .9rem; margin-right: .5rem; user-select: none; }
+.team-card.drag-over {
+  outline: 2px dashed var(--team-color, var(--green));
+  outline-offset: -2px;
+  background: color-mix(in srgb, var(--team-color, var(--green)) 6%, white);
 }
 
 /* ── Responsive ── */

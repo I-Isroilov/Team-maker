@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { balanceTeams, teamAvg } from '../utils/teamBalancer';
 
 const TEAM_COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#06b6d4'];
@@ -33,9 +33,15 @@ function CopyButton({ teams }) {
   );
 }
 
-function TeamCard({ team, color }) {
+function TeamCard({ team, color, dragOver, onDragOver, onDragLeave, onDrop, onDragStart, draggingFrom }) {
   return (
-    <div className="team-card" style={{ '--team-color': color }}>
+    <div
+      className={`team-card ${dragOver ? 'drag-over' : ''}`}
+      style={{ '--team-color': color }}
+      onDragOver={e => { e.preventDefault(); onDragOver(); }}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
       <div className="team-header">
         <span className="team-dot" style={{ background: color }} />
         <h3>{team.name}</h3>
@@ -50,7 +56,13 @@ function TeamCard({ team, color }) {
           .slice()
           .sort((a, b) => b.score - a.score)
           .map(p => (
-            <li key={p.id} className="team-player">
+            <li
+              key={p.id}
+              className={`team-player draggable ${draggingFrom?.playerId === p.id ? 'is-dragging' : ''}`}
+              draggable
+              onDragStart={() => onDragStart(p.id, team.id)}
+            >
+              <span className="drag-handle">⠿</span>
               <span className="tp-name">{p.name}</span>
               <span className="tp-score">{p.score}</span>
             </li>
@@ -64,6 +76,8 @@ export default function TeamsTab({ players }) {
   const [selected, setSelected] = useState(() => new Set(players.map(p => p.id)));
   const [numTeams, setNumTeams] = useState(2);
   const [teams, setTeams] = useState(null);
+  const [dragOver, setDragOver] = useState(null);
+  const dragging = useRef(null);
 
   const togglePlayer = useCallback((id) => {
     setSelected(prev => {
@@ -79,6 +93,34 @@ export default function TeamsTab({ players }) {
   function generate() {
     const active = players.filter(p => selected.has(p.id));
     setTeams(balanceTeams(active, numTeams));
+  }
+
+  function handleDragStart(playerId, fromTeamId) {
+    dragging.current = { playerId, fromTeamId };
+  }
+
+  function handleDrop(toTeamId) {
+    const drag = dragging.current;
+    if (!drag || drag.fromTeamId === toTeamId) {
+      dragging.current = null;
+      setDragOver(null);
+      return;
+    }
+
+    setTeams(prev => {
+      const next = prev.map(t => ({ ...t, players: [...t.players] }));
+      const from = next.find(t => t.id === drag.fromTeamId);
+      const to = next.find(t => t.id === toTeamId);
+      const idx = from.players.findIndex(p => p.id === drag.playerId);
+      const [player] = from.players.splice(idx, 1);
+      to.players.push(player);
+      from.total = from.players.reduce((s, p) => s + p.score, 0);
+      to.total = to.players.reduce((s, p) => s + p.score, 0);
+      return next;
+    });
+
+    dragging.current = null;
+    setDragOver(null);
   }
 
   const activePlayers = players.filter(p => selected.has(p.id));
@@ -148,9 +190,20 @@ export default function TeamsTab({ players }) {
               <button className="btn btn-outline" onClick={generate}>🔀 Reshuffle</button>
             </div>
           </div>
+          <p className="drag-hint">Drag players between teams to adjust</p>
           <div className="teams-grid">
             {teams.map((team, i) => (
-              <TeamCard key={team.id} team={team} color={TEAM_COLORS[i % TEAM_COLORS.length]} />
+              <TeamCard
+                key={team.id}
+                team={team}
+                color={TEAM_COLORS[i % TEAM_COLORS.length]}
+                dragOver={dragOver === team.id}
+                draggingFrom={dragging.current}
+                onDragStart={handleDragStart}
+                onDragOver={() => setDragOver(team.id)}
+                onDragLeave={() => setDragOver(null)}
+                onDrop={() => handleDrop(team.id)}
+              />
             ))}
           </div>
         </div>
