@@ -1,16 +1,18 @@
 import { useState } from 'react';
 
-const SCORE_LABELS = {
-  1: 'Beginner', 2: 'Beginner', 3: 'Amateur', 4: 'Amateur',
-  5: 'Average', 6: 'Average', 7: 'Good', 8: 'Good',
-  9: 'Excellent', 10: 'Pro',
-};
+function scoreLabel(s) {
+  if (s <= 1.5) return 'Beginner';
+  if (s <= 2.5) return 'Amateur';
+  if (s <= 3.5) return 'Average';
+  if (s <= 4.5) return 'Good';
+  return 'Excellent';
+}
 
 function ScoreBadge({ score }) {
-  const level = score <= 2 ? 'low' : score <= 4 ? 'mid-low' : score <= 6 ? 'mid' : score <= 8 ? 'high' : 'top';
+  const level = score <= 1.5 ? 'low' : score <= 2.5 ? 'mid-low' : score <= 3.5 ? 'mid' : score <= 4.5 ? 'high' : 'top';
   return (
     <span className={`score-badge score-${level}`}>
-      {score} <span className="score-label">{SCORE_LABELS[score]}</span>
+      {score} <span className="score-label">{scoreLabel(score)}</span>
     </span>
   );
 }
@@ -38,7 +40,7 @@ function PlayerRow({ player, onUpdate, onDelete }) {
         />
         <div className="score-slider-wrap">
           <input
-            type="range" min="1" max="10" value={score}
+            type="range" min="1" max="5" step="0.5" value={score}
             onChange={e => setScore(Number(e.target.value))}
             className="score-slider"
           />
@@ -66,7 +68,7 @@ function PlayerRow({ player, onUpdate, onDelete }) {
 
 export default function PlayersTab({ players, onAdd, onUpdate, onDelete }) {
   const [name, setName] = useState('');
-  const [score, setScore] = useState(5);
+  const [score, setScore] = useState(3);
 
   function handleAdd() {
     if (onAdd(name, score)) setName('');
@@ -85,9 +87,9 @@ export default function PlayersTab({ players, onAdd, onUpdate, onDelete }) {
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
           />
           <div className="score-field">
-            <label>Skill <strong>{score}</strong>/10</label>
+            <label>Skill <strong>{score}</strong>/5</label>
             <input
-              type="range" min="1" max="10" value={score}
+              type="range" min="1" max="5" step="0.5" value={score}
               onChange={e => setScore(Number(e.target.value))}
               className="score-slider"
             />
