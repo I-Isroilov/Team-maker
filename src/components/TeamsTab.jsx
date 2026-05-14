@@ -3,6 +3,36 @@ import { balanceTeams, teamAvg } from '../utils/teamBalancer';
 
 const TEAM_COLORS = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#a855f7', '#06b6d4'];
 
+function formatTeamsText(teams) {
+  return teams
+    .map(t => {
+      const playerList = t.players
+        .slice()
+        .sort((a, b) => b.score - a.score)
+        .map(p => `  • ${p.name} (${p.score})`)
+        .join('\n');
+      return `${t.name} — avg ${teamAvg(t)}\n${playerList}`;
+    })
+    .join('\n\n');
+}
+
+function CopyButton({ teams }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(formatTeamsText(teams)).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  return (
+    <button className={`btn btn-outline ${copied ? 'btn-copied' : ''}`} onClick={handleCopy}>
+      {copied ? '✓ Copied!' : '📋 Copy'}
+    </button>
+  );
+}
+
 function TeamCard({ team, color }) {
   return (
     <div className="team-card" style={{ '--team-color': color }}>
@@ -35,7 +65,6 @@ export default function TeamsTab({ players }) {
   const [numTeams, setNumTeams] = useState(2);
   const [teams, setTeams] = useState(null);
 
-  // Keep selected in sync when players list changes
   const togglePlayer = useCallback((id) => {
     setSelected(prev => {
       const next = new Set(prev);
@@ -114,7 +143,10 @@ export default function TeamsTab({ players }) {
         <div className="results-section">
           <div className="results-header">
             <h2>Teams</h2>
-            <button className="btn btn-outline" onClick={generate}>🔀 Reshuffle</button>
+            <div className="results-actions">
+              <CopyButton teams={teams} />
+              <button className="btn btn-outline" onClick={generate}>🔀 Reshuffle</button>
+            </div>
           </div>
           <div className="teams-grid">
             {teams.map((team, i) => (
