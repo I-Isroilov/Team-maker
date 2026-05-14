@@ -283,16 +283,28 @@ body {
   padding: .1rem .45rem; border-radius: 6px;
 }
 
-/* ── Drag & Drop ── */
+/* ── Drag & Drop / Tap-to-move ── */
 .drag-hint { font-size: .8rem; color: var(--text-muted); margin: -.25rem 0 .25rem; }
-.team-player.draggable { cursor: grab; transition: background .1s, opacity .15s; }
+.drag-handle { color: var(--text-muted); font-size: .9rem; margin-right: .5rem; user-select: none; flex-shrink: 0; }
+.team-player.draggable { cursor: grab; user-select: none; transition: background .12s, opacity .15s, box-shadow .12s; }
 .team-player.draggable:active { cursor: grabbing; }
-.team-player.is-dragging { opacity: .35; }
-.drag-handle { color: var(--text-muted); font-size: .9rem; margin-right: .5rem; user-select: none; }
-.team-card.drag-over {
+.team-player.is-selected {
+  background: color-mix(in srgb, var(--green) 10%, white);
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+  border-radius: 6px;
+}
+.team-card.drag-over,
+.team-card.drop-target {
   outline: 2px dashed var(--team-color, var(--green));
   outline-offset: -2px;
   background: color-mix(in srgb, var(--team-color, var(--green)) 6%, white);
+  cursor: pointer;
+}
+.drop-hint {
+  text-align: center; font-size: .8rem; font-weight: 600;
+  color: var(--team-color, var(--green));
+  padding: .4rem; opacity: .8;
 }
 
 /* ── Responsive ── */
