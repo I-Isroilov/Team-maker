@@ -1,7 +1,12 @@
 export function balanceTeams(players, numTeams) {
   if (!players.length || numTeams < 1) return [];
 
-  const sorted = [...players].sort((a, b) => b.score - a.score);
+  // Shuffle first so same-score players appear in random order,
+  // then stable-sort by score so the greedy pass stays balanced.
+  const sorted = [...players]
+    .sort(() => Math.random() - 0.5)
+    .sort((a, b) => b.score - a.score);
+
   const teams = Array.from({ length: numTeams }, (_, i) => ({
     id: i + 1,
     name: `Team ${i + 1}`,
@@ -9,9 +14,11 @@ export function balanceTeams(players, numTeams) {
     total: 0,
   }));
 
-  // Greedy: assign each player to the team with the lowest total
   for (const player of sorted) {
-    const target = teams.reduce((min, t) => (t.total < min.total ? t : min), teams[0]);
+    // When multiple teams share the lowest total, pick one at random.
+    const minTotal = Math.min(...teams.map(t => t.total));
+    const candidates = teams.filter(t => t.total === minTotal);
+    const target = candidates[Math.floor(Math.random() * candidates.length)];
     target.players.push(player);
     target.total += player.score;
   }
