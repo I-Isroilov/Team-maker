@@ -1,16 +1,19 @@
 import { useState } from 'react';
 
-const SCORE_LABELS = {
-  1: 'Beginner', 2: 'Beginner', 3: 'Amateur', 4: 'Amateur',
-  5: 'Average', 6: 'Average', 7: 'Good', 8: 'Good',
-  9: 'Excellent', 10: 'Pro',
-};
+function scoreLabel(s) {
+  if (s <= 2)   return 'Beginner';
+  if (s <= 4)   return 'Amateur';
+  if (s <= 6)   return 'Average';
+  if (s <= 8)   return 'Good';
+  if (s <= 9)   return 'Excellent';
+  return 'Pro';
+}
 
 function ScoreBadge({ score }) {
   const level = score <= 2 ? 'low' : score <= 4 ? 'mid-low' : score <= 6 ? 'mid' : score <= 8 ? 'high' : 'top';
   return (
     <span className={`score-badge score-${level}`}>
-      {score} <span className="score-label">{SCORE_LABELS[score]}</span>
+      {score} <span className="score-label">{scoreLabel(score)}</span>
     </span>
   );
 }
@@ -38,7 +41,7 @@ function PlayerRow({ player, onUpdate, onDelete }) {
         />
         <div className="score-slider-wrap">
           <input
-            type="range" min="1" max="10" value={score}
+            type="range" min="1" max="10" step="0.5" value={score}
             onChange={e => setScore(Number(e.target.value))}
             className="score-slider"
           />
@@ -87,7 +90,7 @@ export default function PlayersTab({ players, onAdd, onUpdate, onDelete }) {
           <div className="score-field">
             <label>Skill <strong>{score}</strong>/10</label>
             <input
-              type="range" min="1" max="10" value={score}
+              type="range" min="1" max="10" step="0.5" value={score}
               onChange={e => setScore(Number(e.target.value))}
               className="score-slider"
             />
