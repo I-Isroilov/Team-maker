@@ -40,7 +40,7 @@ function PlayerRow({ player, onUpdate, onDelete }) {
         />
         <div className="score-slider-wrap">
           <input
-            type="range" min="1" max="5" step="0.5" value={score}
+            type="range" min="1" max="5" step="0.25" value={score}
             onChange={e => setScore(Number(e.target.value))}
             className="score-slider"
           />
@@ -89,7 +89,7 @@ export default function PlayersTab({ players, onAdd, onUpdate, onDelete }) {
           <div className="score-field">
             <label>Skill <strong>{score}</strong>/5</label>
             <input
-              type="range" min="1" max="5" step="0.5" value={score}
+              type="range" min="1" max="5" step="0.25" value={score}
               onChange={e => setScore(Number(e.target.value))}
               className="score-slider"
             />
